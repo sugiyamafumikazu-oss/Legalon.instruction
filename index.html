@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal On インタラクティブ操作ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+            color: #334155; /* Slate 700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 300px;
+        }
+        .nav-card {
+            transition: all 0.3s ease;
+        }
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .active-tab {
+            border-bottom: 2px solid #2563eb; /* Blue 600 */
+            color: #2563eb;
+            font-weight: bold;
+        }
+        .step-connector::after {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            bottom: 0;
+            left: 1rem;
+            width: 2px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+        .step-connector:last-child::after {
+            display: none;
+        }
+    </style>
+    <!-- Chosen Palette: Trust Blue & Clean White (Professional Legal Tech Theme) -->
+    <!-- Application Structure Plan:
+         The app is designed as a self-paced learning dashboard.
+         1. Hero Section: Sets the context.
+         2. Main Dashboard Grid: Quick access to the 6 core modules extracted from the source text.
+         3. Detailed Content Sections: Each section corresponds to a manual chapter but adds interactivity.
+            - Setup: Interactive checklist.
+            - Workspace: "Trap" simulation for the sharing permission issue.
+            - Review: Tabbed interface for PDF/Word options + Simulation of AI Revise.
+            - Templates: Visual data representation of the library.
+            - E-Sign: Vertical stepper for clear process flow.
+            - Support: Simple access cards.
+         Reasoning: The source text is a manual. Users learn best by "doing" or seeing structured flows rather than wall-of-text. The modular design allows non-linear exploration.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Workspace "Share" Alert -> Goal: Highlight the critical warning in the text -> Interaction: Button click triggers modal alert -> Justification: Active engagement prevents user error.
+         2. Template Chart -> Goal: Visualize "2100+ templates" -> Viz: Donut Chart (Chart.js) -> Justification: Breaks up text, shows scale.
+         3. E-Sign Flow -> Goal: Explain 5-step process -> Viz: Vertical Stepper (HTML/CSS) -> Justification: Linear processes are best understood sequentially.
+         4. AI Revise -> Goal: Explain "Auto-correction" -> Viz: Before/After Text Block toggle -> Justification: clear comparison.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold text-blue-800">Legal On</span>
+                <span class="text-sm bg-blue-100 text-blue-800 py-1 px-3 rounded-full font-medium">操作ガイド</span>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-600">
+                <a href="#setup" class="hover:text-blue-600 transition">初期設定</a>
+                <a href="#workspace" class="hover:text-blue-600 transition">ワークスペース</a>
+                <a href="#review" class="hover:text-blue-600 transition">レビュー・AI</a>
+                <a href="#templates" class="hover:text-blue-600 transition">テンプレート</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full space-y-12">
+
+        <!-- Hero Section -->
+        <section class="text-center py-10 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Legal On スタートアップガイド</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                初期設定からAIレビュー、電子契約まで。<br>
+                Legal Onの基本操作をインタラクティブに学び、業務効率化を始めましょう。
+            </p>
+            <div class="mt-8">
+                <button onclick="scrollToSection('setup')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
+                    学習を始める
+                </button>
+            </div>
+        </section>
+
+        <!-- Navigation Dashboard -->
+        <section id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards generated dynamically or static for reliability -->
+            <div onclick="scrollToSection('setup')" class="nav-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer group">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 text-2xl group-hover:bg-blue-600 group-hover:text-white transition">⚙️</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">1. 初期設定</h3>
+                <p class="text-sm text-slate-500">ユーザー権限の付与と管理者設定について。</p>
+            </div>
+            <div onclick="scrollToSection('workspace')" class="nav-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer group">
+                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4 text-2xl group-hover:bg-indigo-600 group-hover:text-white transition">📁</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">2. ワークスペース</h3>
+                <p class="text-sm text-slate-500">フォルダ作成と<span class="text-red-500 font-bold">最重要</span>な共有設定のルール。</p>
+            </div>
+            <div onclick="scrollToSection('review')" class="nav-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer group">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 text-2xl group-hover:bg-purple-600 group-hover:text-white transition">🤖</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">3. レビュー・AI</h3>
+                <p class="text-sm text-slate-500">PDF変換、リスクチェック、AIリバイス機能。</p>
+            </div>
+            <div onclick="scrollToSection('templates')" class="nav-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer group">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 text-2xl group-hover:bg-green-600 group-hover:text-white transition">📄</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">4. テンプレート</h3>
+                <p class="text-sm text-slate-500">2,100点以上のひな形検索と条文検索。</p>
+            </div>
+            <div onclick="scrollToSection('esign')" class="nav-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer group">
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 text-2xl group-hover:bg-orange-600 group-hover:text-white transition">✍️</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">5. 電子署名</h3>
+                <p class="text-sm text-slate-500">送信フローと押印位置の設定。</p>
+            </div>
+            <div onclick="scrollToSection('support')" class="nav-card bg-white p-6 rounded-xl shadow-sm border border-slate-200 cursor-pointer group">
+                <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4 text-2xl group-hover:bg-teal-600 group-hover:text-white transition">🎧</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">6. サポート</h3>
+                <p class="text-sm text-slate-500">お困りの際のヘルプセンター活用法。</p>
+            </div>
+        </section>
+
+        <!-- SECTION 1: INITIAL SETUP -->
+        <section id="setup" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center">
+                    <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">1</span>
+                    初期設定（権限の付与）
+                </h2>
+                <p class="mt-2 text-slate-600">
+                    システム利用開始時に必須となる管理者設定です。各ユーザーに対して適切な権限を割り当てることで、Legal Onの機能をフル活用できるようになります。
+                </p>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-lg text-slate-700 mb-2">設定チェックリスト</h3>
+                        <p class="text-sm text-slate-500 mb-4">「共通管理」画面で行う操作を確認しましょう。</p>
+                        
+                        <div class="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+                            <label class="flex items-start space-x-3 cursor-pointer">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500" onchange="checkProgress('setup')">
+                                <div>
+                                    <span class="font-bold block text-slate-800">利用種別の変更</span>
+                                    <span class="text-sm text-slate-500">対象ユーザーを「利用する（有効）」に切り替え</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start space-x-3 cursor-pointer">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500" onchange="checkProgress('setup')">
+                                <div>
+                                    <span class="font-bold block text-slate-800">モジュール管理者権限</span>
+                                    <span class="text-sm text-slate-500">すべての項目にチェックを入れる</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start space-x-3 cursor-pointer">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500" onchange="checkProgress('setup')">
+                                <div>
+                                    <span class="font-bold block text-slate-800">IT管理者権限</span>
+                                    <span class="text-sm text-slate-500">ワークスペース作成のために付与（運用により全員へ）</span>
+                                </div>
+                            </label>
+                            <label class="flex items-start space-x-3 cursor-pointer">
+                                <input type="checkbox" class="mt-1 w-5 h-5 text-blue-600 rounded focus:ring-blue-500" onchange="checkProgress('setup')">
+                                <div>
+                                    <span class="font-bold block text-slate-800">保存</span>
+                                    <span class="text-sm text-slate-500">最後に必ず「保存」をクリック</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div id="setup-feedback" class="hidden bg-green-50 text-green-700 p-3 rounded-lg text-sm font-bold text-center animate-pulse">
+                            🎉 すべての手順を確認しました！
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-100 rounded-xl p-6">
+                        <h3 class="font-bold text-slate-700 mb-3">💡 解説メモ</h3>
+                        <ul class="space-y-3 text-sm text-slate-600">
+                            <li class="flex items-start">
+                                <span class="text-blue-500 mr-2">●</span>
+                                <span><strong>IT管理者権限とは？</strong><br>フォルダ（ワークスペース）を自由に作成・管理するための権限です。スムーズな運用のために、利用メンバー全員に付与することを推奨するケースが多いです。</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-blue-500 mr-2">●</span>
+                                <span><strong>保存を忘れずに</strong><br>チェックを入れただけでは反映されません。画面下部の保存ボタンを押すまでがワンセットです。</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: WORKSPACE (The Trap Simulation) -->
+        <section id="workspace" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center">
+                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">2</span>
+                    ワークスペース管理と「落とし穴」
+                </h2>
+                <p class="mt-2 text-slate-600">
+                    ファイル管理の基本単位となるワークスペース。作成時にはシステム特有の<strong>「ある操作」</strong>を忘れると、作成者本人ですらアクセスできなくなります。
+                </p>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <span class="text-2xl">⚠️</span>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-bold text-yellow-800">重要：新規作成時の注意点</h3>
+                            <p class="text-sm text-yellow-700 mt-1">
+                                「ワークスペースを作ったのに表示されない」という問い合わせが多発しています。<br>
+                                以下のシミュレーションで正しい手順を確認してください。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation UI -->
+                <div class="border border-slate-300 rounded-lg overflow-hidden max-w-2xl mx-auto shadow-md">
+                    <div class="bg-slate-800 text-white p-2 text-xs flex justify-between items-center">
+                        <span>Legal On ワークスペース作成画面 (シミュレーション)</span>
+                        <div class="flex space-x-1"><div class="w-2 h-2 rounded-full bg-red-500"></div><div class="w-2 h-2 rounded-full bg-yellow-500"></div><div class="w-2 h-2 rounded-full bg-green-500"></div></div>
+                    </div>
+                    <div class="bg-white p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">ワークスペース名</label>
+                            <input type="text" value="◯◯株式会社 案件用" class="w-full border-gray-300 rounded-md shadow-sm p-2 border bg-gray-50" disabled>
+                        </div>
+                        
+                        <div id="simulation-step-1">
+                            <button onclick="triggerTrap()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
+                                作成する
+                            </button>
+                        </div>
+
+                        <!-- Hidden Success/Error Messages -->
+                        <div id="simulation-error" class="hidden animate-bounce">
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                <strong class="font-bold">ストップ！まだ終わりではありません！</strong>
+                                <span class="block sm:inline">このままでは、あなた自身もこのフォルダにアクセスできません。</span>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <button onclick="showSolution()" class="text-blue-600 underline font-bold">どうすればいい？</button>
+                            </div>
+                        </div>
+
+                        <div id="simulation-solution" class="hidden bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-bold text-green-800 mb-2">✅ 正しい手順：自分への共有設定</h4>
+                            <ol class="list-decimal list-inside text-sm text-green-700 space-y-2">
+                                <li>作成後、すぐに<strong>共有設定</strong>画面へ</li>
+                                <li>検索窓に<strong>自分の名前/メール</strong>を入力</li>
+                                <li>権限を<strong>「管理者」</strong>にして追加</li>
+                            </ol>
+                            <p class="text-xs mt-3 text-slate-500">※自分自身も「ユーザーの一人」として招待するイメージです。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: REVIEW & AI -->
+        <section id="review" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center">
+                    <span class="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">3</span>
+                    レビュー機能とAIリバイス
+                </h2>
+                <p class="mt-2 text-slate-600">
+                    PDFファイルの読み込みから、AIによるリスク検知、そして修正文の自動提案まで。Legal Onの核心となる機能です。
+                </p>
+            </div>
+            
+            <div class="p-6 md:p-8">
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button class="py-2 px-4 text-sm font-medium text-slate-500 hover:text-purple-600 focus:outline-none active-tab" id="tab-btn-1" onclick="switchTab(1)">
+                        1. 変換・編集
+                    </button>
+                    <button class="py-2 px-4 text-sm font-medium text-slate-500 hover:text-purple-600 focus:outline-none" id="tab-btn-2" onclick="switchTab(2)">
+                        2. AIリバイス体験
+                    </button>
+                </div>
+
+                <!-- Tab 1: Conversion -->
+                <div id="tab-content-1" class="block">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-lg text-slate-800">PDFからWordへの変換</h3>
+                            <p class="text-sm text-slate-600">PDFをアップロードした際、編集のためにWord形式への変換が行われます。用途に合わせて2つのエディターを選べます。</p>
+                            <ul class="space-y-3 mt-4">
+                                <li class="bg-slate-50 p-3 rounded border border-slate-200">
+                                    <span class="font-bold text-blue-700 block">MS Word Online</span>
+                                    <span class="text-xs text-slate-500">いつものWord画面で操作可能。レイアウト崩れが少ない。</span>
+                                </li>
+                                <li class="bg-slate-50 p-3 rounded border border-slate-200">
+                                    <span class="font-bold text-blue-700 block">標準エディター</span>
+                                    <span class="text-xs text-slate-500">LegalForce従来版に近いUI。動作が軽快。</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <h4 class="font-bold text-red-800 mb-2 flex items-center">
+                                <span class="mr-2">💡</span>レイアウトが崩れたら？
+                            </h4>
+                            <p class="text-sm text-red-700 mb-3">
+                                変換エンジンの相性により、文字化けや配置ズレが起きることがあります。
+                            </p>
+                            <div class="bg-white p-3 rounded text-center shadow-sm">
+                                <span class="text-xs text-slate-400 block mb-1">画面右上のボタン</span>
+                                <button class="bg-slate-100 text-slate-600 text-sm font-bold py-1 px-3 rounded border border-slate-300 pointer-events-none">
+                                    🔄 元PDFからWordに再変換
+                                </button>
+                                <p class="text-xs text-slate-500 mt-2">このボタンを押すと、別のエンジンで再処理され改善する場合があります。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: AI Revise Demo -->
+                <div id="tab-content-2" class="hidden">
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-lg text-slate-800">AIリバイス機能デモ</h3>
+                        <p class="text-sm text-slate-600">AIがリスクを指摘するだけでなく、<strong class="text-purple-600">「どう直すべきか」</strong>を具体的に提案・自動修正してくれます。</p>
+
+                        <div class="grid md:grid-cols-2 gap-4 mt-6">
+                            <!-- Original -->
+                            <div class="border border-slate-300 rounded-lg p-4 bg-gray-50">
+                                <div class="text-xs font-bold text-slate-400 mb-2">修正前の条文（リスクあり）</div>
+                                <p class="text-sm text-slate-700 leading-relaxed font-serif">
+                                    第◯条（損害賠償）<br>
+                                    甲及び乙は、本契約の履行に関し相手方に損害を与えた場合、<span class="bg-red-200 text-red-800 px-1 rounded">直接かつ現実に生じた通常の損害に限り</span>、その賠償をする責任を負うものとする。
+                                </p>
+                            </div>
+
+                            <!-- AI Suggestion -->
+                            <div class="border-2 border-purple-100 rounded-lg p-4 bg-white relative">
+                                <div class="absolute -top-3 right-4 bg-purple-600 text-white text-xs px-2 py-1 rounded-full shadow">AIの提案</div>
+                                <div class="text-xs font-bold text-purple-600 mb-2">AIリバイス実行後</div>
+                                <p class="text-sm text-slate-700 leading-relaxed font-serif" id="ai-text-demo">
+                                    <span class="text-slate-400">（ここに修正後の文章が表示されます）</span>
+                                </p>
+                                <button onclick="runAIDemo()" class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-2 rounded transition flex items-center justify-center">
+                                    <span>✨ AIリバイスを実行</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TEMPLATES -->
+        <section id="templates" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center">
+                    <span class="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">4</span>
+                    2,100点以上のテンプレート検索
+                </h2>
+                <p class="mt-2 text-slate-600">
+                    契約書から社内規定まで、豊富なひな形を自由にダウンロード可能。キーワード検索に加え、特定の条文だけを探す「条文検索」も搭載しています。
+                </p>
+            </div>
+            <div class="p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+                <!-- Text Content -->
+                <div class="md:w-1/2 space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                        <h3 class="font-bold text-green-800 mb-2">🔍 2つの検索モード</h3>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start">
+                                <span class="font-bold text-slate-700 min-w-[80px]">通常検索:</span>
+                                <span class="text-slate-600">「秘密保持契約書」など、文書単位で探す場合に使用します。</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="font-bold text-slate-700 min-w-[80px]">条文検索:</span>
+                                <span class="text-slate-600">「損害賠償」など、特定のキーワードが含まれた<strong class="text-green-700">条文の本文だけ</strong>を切り出して表示します。自社のひな形に条項を追加したい時に便利です。</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <p class="text-xs text-slate-400 text-right">※チャートは収録内容のイメージです</p>
+                </div>
+                
+                <!-- Chart Container -->
+                <div class="md:w-1/2 w-full flex flex-col items-center">
+                    <div class="chart-container">
+                        <canvas id="templateChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: E-SIGNATURE -->
+        <section id="esign" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center">
+                    <span class="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">5</span>
+                    電子署名（サイン）機能
+                </h2>
+                <p class="mt-2 text-slate-600">
+                    作成した契約書をそのまま送信し、締結まで完了できます。年間300通の送信枠が含まれています。
+                </p>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="relative pl-4">
+                    <!-- Step 1 -->
+                    <div class="step-connector relative pb-8 pl-8">
+                        <div class="absolute left-0 top-0 bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-orange-200 z-10">1</div>
+                        <h3 class="font-bold text-slate-800 text-lg">署名依頼の作成</h3>
+                        <p class="text-sm text-slate-600 mt-1">メニュー「電子署名依頼」＞「署名依頼を作成」をクリック。</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="step-connector relative pb-8 pl-8">
+                        <div class="absolute left-0 top-0 bg-white text-slate-500 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-slate-200 z-10">2</div>
+                        <h3 class="font-bold text-slate-800 text-lg">ファイルの追加</h3>
+                        <p class="text-sm text-slate-600 mt-1">Legal On内のファイルを選択、またはPCからアップロード。</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="step-connector relative pb-8 pl-8">
+                        <div class="absolute left-0 top-0 bg-white text-slate-500 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-slate-200 z-10">3</div>
+                        <h3 class="font-bold text-slate-800 text-lg">受信者の設定</h3>
+                        <p class="text-sm text-slate-600 mt-1">
+                            「相手方」と「自社」の署名者情報を入力。<br>
+                            <span class="text-xs bg-slate-100 px-2 py-1 rounded mt-1 inline-block">Tips: 署名者だけでなく「閲覧者（CC）」の設定も可能です。</span>
+                        </p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="step-connector relative pb-8 pl-8">
+                        <div class="absolute left-0 top-0 bg-white text-slate-500 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-slate-200 z-10">4</div>
+                        <h3 class="font-bold text-slate-800 text-lg">押印位置の指定（ドラッグ＆ドロップ）</h3>
+                        <p class="text-sm text-slate-600 mt-1">
+                            プレビュー画面で「署名」ボタンを配置したい場所に置きます。<br>
+                            テキストボックスやチェックボックスも配置可能です。
+                        </p>
+                    </div>
+                    <!-- Step 5 -->
+                    <div class="step-connector relative pl-8">
+                        <div class="absolute left-0 top-0 bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-orange-600 z-10">5</div>
+                        <h3 class="font-bold text-slate-800 text-lg">送信</h3>
+                        <p class="text-sm text-slate-600 mt-1">内容を確認して送信ボタンをクリック。相手方にメールが届きます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: SUPPORT -->
+        <section id="support" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-12">
+            <div class="bg-teal-50 p-6 border-b border-teal-100">
+                <h2 class="text-2xl font-bold text-teal-800 flex items-center">
+                    <span class="bg-teal-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">?</span>
+                    困ったときは
+                </h2>
+            </div>
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 p-4 rounded-lg flex items-start space-x-4 hover:bg-slate-50 transition">
+                    <div class="text-3xl">🎧</div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">ヘルプセンター（マニュアル）</h3>
+                        <p class="text-sm text-slate-600 mt-1">画面左下のヘッドホンマークをクリック。操作マニュアルやFAQを検索できます。</p>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 p-4 rounded-lg flex items-start space-x-4 hover:bg-slate-50 transition">
+                    <div class="text-3xl">💬</div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">チャットサポート</h3>
+                        <p class="text-sm text-slate-600 mt-1">「会話を始める」ボタンから、AIボットまたはオペレーター（有人）に直接質問が可能です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 py-8 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2026 Legal On Operation Guide Demo. Based on provided documentation.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Smooth scrolling for navigation
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Setup Checklist Logic
+        function checkProgress(sectionId) {
+            const checkboxes = document.querySelectorAll(`#${sectionId} input[type="checkbox"]`);
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const feedback = document.getElementById('setup-feedback');
+            
+            if (allChecked) {
+                feedback.classList.remove('hidden');
+            } else {
+                feedback.classList.add('hidden');
+            }
+        }
+
+        // Workspace Trap Logic
+        function triggerTrap() {
+            const errorMsg = document.getElementById('simulation-error');
+            const btn = document.querySelector('#simulation-step-1 button');
+            
+            btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.innerText = "作成中...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                errorMsg.classList.remove('hidden');
+            }, 500);
+        }
+
+        function showSolution() {
+            const solution = document.getElementById('simulation-solution');
+            solution.classList.remove('hidden');
+            solution.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Review Tabs Logic
+        function switchTab(tabIndex) {
+            // Reset tabs
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
+                btn.classList.remove('active-tab', 'text-purple-600');
+                btn.classList.add('text-slate-500');
+            });
+            document.querySelectorAll('[id^="tab-content-"]').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('block');
+            });
+
+            // Activate selected
+            const activeBtn = document.getElementById(`tab-btn-${tabIndex}`);
+            const activeContent = document.getElementById(`tab-content-${tabIndex}`);
+
+            activeBtn.classList.add('active-tab', 'text-purple-600');
+            activeBtn.classList.remove('text-slate-500');
+            activeContent.classList.remove('hidden');
+            activeContent.classList.add('block');
+        }
+
+        // AI Revise Demo Logic
+        function runAIDemo() {
+            const outputArea = document.getElementById('ai-text-demo');
+            outputArea.innerHTML = `
+                <span class="animate-pulse text-purple-600">AIが解析中...</span>
+            `;
+            
+            setTimeout(() => {
+                outputArea.innerHTML = `
+                    第◯条（損害賠償）<br>
+                    甲及び乙は、本契約の履行に関し相手方に損害を与えた場合、<span class="bg-green-100 text-green-800 px-1 rounded font-bold">その損害を賠償する</span>責任を負うものとする。
+                    <br><br>
+                    <span class="text-xs text-purple-600 font-bold block mt-2 border-t pt-2 border-purple-100">
+                        🔍 AIコメント: 「直接かつ現実に生じた通常の損害に限り」という限定的な表現は、損害賠償の範囲を不当に狭める可能性があるため削除し、一般的な表現に修正しました。
+                    </span>
+                `;
+            }, 1500);
+        }
+
+        // Chart.js Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('templateChart').getContext('2d');
+            
+            // Dummy distribution data based on typical legal library composition
+            const data = {
+                labels: ['業務委託・請負', '秘密保持(NDA)', '雇用・人事労務', '社内規程', 'その他（覚書等）'],
+                datasets: [{
+                    data: [35, 20, 25, 10, 10],
+                    backgroundColor: [
+                        '#2563eb', // Blue
+                        '#4f46e5', // Indigo
+                        '#9333ea', // Purple
+                        '#16a34a', // Green
+                        '#f59e0b'  // Orange
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            };
+
+            const config = {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: "'Noto Sans JP', sans-serif",
+                                    size: 12
+                                },
+                                boxWidth: 12
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'テンプレート種類（イメージ）',
+                            font: {
+                                family: "'Noto Sans JP', sans-serif",
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%',
+                }
+            };
+
+            new Chart(ctx, config);
+        });
+    </script>
+</body>
+</html>
